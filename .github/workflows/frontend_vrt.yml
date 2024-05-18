@@ -1,0 +1,59 @@
+name: frontend_vrt
+on:
+  workflow_dispatch:
+    inputs:
+      BEFORE_REF:
+        description: 'BEFORE_REF'
+        required: true
+        default: 'main'
+      AFTER_REF:
+          description: 'AFTER_REF'
+          required: true
+          default: 'main'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./
+    # These permissions are needed to interact with GitHub's OIDC Token endpoint.
+    permissions:
+      id-token: write
+      contents: read
+      packages: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: 'package.json'
+          cache: 'npm'
+
+      - name: VRT
+        run: |
+          sudo apt install fonts-noto
+          git checkout ${{ github.event.inputs.BEFORE_REF }}
+          npm ci
+          npm run build-storybook
+          npm run snapshot:before
+
+          git checkout  ${{ github.event.inputs.AFTER_REF }}
+          rm -rf node_modules storybook-static
+          npm ci
+          npm run build-storybook
+          npm run snapshot:after
+          npm run vrt
+        continue-on-error: true
+      - uses: actions/upload-artifact@v3
+        with:
+          name: vrt-report
+          path: |
+            ./__screenshots_before__
+            ./__screenshots_after__
+            ./__screenshots_diff__
+            ./vrt_report.html
+          retention-days: 10

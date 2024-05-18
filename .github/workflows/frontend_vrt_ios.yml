@@ -1,0 +1,67 @@
+name: frontend_vrt_ios
+on:
+  workflow_dispatch:
+    inputs:
+      BEFORE_REF:
+        description: 'BEFORE_REF'
+        required: true
+        default: 'main'
+      AFTER_REF:
+          description: 'AFTER_REF'
+          required: true
+          default: 'main'
+
+jobs:
+  check:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: ./
+    # These permissions are needed to interact with GitHub's OIDC Token endpoint.
+    permissions:
+      id-token: write
+      contents: read
+      packages: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: 'package.json'
+          cache: 'npm'
+
+      - name: VRT
+        run: |
+          git checkout ${{ github.event.inputs.BEFORE_REF }}
+          npm ci
+          npm run storybook &
+          npm run appium:server &
+          npm run build-storybook
+          npm run snapshot:ios
+          mv __ios_screenshots__ __ios_screenshots_before__
+          kill -9 `pgrep -f 'storybook' `
+          kill -9 `pgrep -f 'appium' `
+
+          git checkout  ${{ github.event.inputs.AFTER_REF }}
+          rm -rf node_modules storybook-static
+          npm ci
+          npm run storybook &
+          npm run appium:server &
+          npm run build-storybook
+          npm run snapshot:ios
+          mv __ios_screenshots__ __ios_screenshots_after__
+          npm run vrt_ios
+        continue-on-error: true
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: vrt-ios-report
+          path: |
+            ./__ios_screenshots_before__
+            ./__ios_screenshots_after__
+            ./__ios_screenshots_diff__
+            ./vrt_ios_report.html
+          retention-days: 10
