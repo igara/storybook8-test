@@ -8,9 +8,9 @@ const targetIPhoneName = 'iPhone SE (3rd generation)';
 
 
 const main = async () => {
-  const storiesJSONFile = readFileSync('./storybook-static/stories.json', 'utf-8');
+  const storiesJSONFile = readFileSync('./storybook-static/index.json', 'utf-8');
   const storiesJSON = JSON.parse(storiesJSONFile);
-  const stories = storiesJSON.stories;
+  const stories = storiesJSON.entries;
 
 
   const simctl = new Simctl();
