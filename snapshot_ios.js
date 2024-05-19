@@ -1,7 +1,7 @@
 const { Simctl } = require('node-simctl');
 const wdio = require('webdriverio');
 const { readFileSync, mkdirSync } = require('fs');
-
+const { execSync } = require('child_process')
 
 const targetIOSSDKVerdion = '17.5';
 const targetIPhoneName = 'iPhone SE (3rd generation)';
@@ -41,6 +41,9 @@ const main = async () => {
     process.exit(1);
   }
 
+  execSync(`/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/Contents/MacOS/Simulator -CurrentDeviceUDID ${udid} &`)
+
+  await new Promise(resolve => setTimeout(resolve, 30000));
 
   const browser = await wdio.remote({
     port: 4723,
@@ -52,8 +55,6 @@ const main = async () => {
       // 'safari:platformVersion': targetIOSSDKVerdion,
       // 'safari:deviceName': targetIPhoneName,
       'appium:udid': udid,
-      "appium:wdaLaunchTimeout": 720000,
-      "appium:usePrebuiltWDA": true
     },
   });
 
