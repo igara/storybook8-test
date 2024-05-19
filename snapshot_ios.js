@@ -52,6 +52,8 @@ const main = async () => {
       // 'safari:platformVersion': targetIOSSDKVerdion,
       // 'safari:deviceName': targetIPhoneName,
       'appium:udid': udid,
+      "appium:wdaLaunchTimeout": 720000,
+      "appium:usePrebuiltWDA": true
     },
   });
 
