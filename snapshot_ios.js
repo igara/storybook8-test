@@ -93,6 +93,7 @@ const main = async () => {
 
   await browser.deleteSession();
 
+  execSync("kill -9 `pgrep -f 'Simulator' `")
 
   process.exit(0);
 }
