@@ -27,10 +27,15 @@
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@hookform/resolvers": "3.3.2",
+    "@mui/icons-material": "^5.15.18",
     "@mui/material": "^5.15.18",
+    "@mui/material-nextjs": "^5.15.11",
     "next": "14.2.3",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-hook-form": "7.49.2",
+    "yup": "1.3.2"
   },
   "devDependencies": {
     "@appium/doctor": "2.0.36",
@@ -53,6 +58,8 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.3",
     "eslint-plugin-storybook": "^0.8.0",
+    "msw": "^2.3.0",
+    "msw-storybook-addon": "^2.0.2",
     "node-simctl": "7.4.4",
     "reg-cli": "0.18.1",
     "storybook": "^8.1.1",
@@ -60,5 +67,10 @@
     "typescript": "^5",
     "wait-on": "7.2.0",
     "webdriverio": "8.36.1"
+  },
+  "msw": {
+    "workerDirectory": [
+      ".storybook/public"
+    ]
   }
 }

@@ -1,5 +1,11 @@
 import type { Preview } from "@storybook/react";
+import React from 'react';
 import { withScreenshot } from "storycap";
+import { initialize, mswLoader } from 'msw-storybook-addon';
+import { ThemeLayout } from '../src/theme';
+
+// Initialize MSW
+initialize();
 
 const preview: Preview = {
   parameters: {
@@ -23,10 +29,18 @@ const preview: Preview = {
       },
     },
   },
+  loaders: [mswLoader],
   decorators: [
     // @ts-ignore
     withScreenshot,
-  ]
+    (Story) => {
+      return (
+        <ThemeLayout storybook>
+          <Story />
+        </ThemeLayout>
+      );
+    },
+  ],
 };
 
 export default preview;
